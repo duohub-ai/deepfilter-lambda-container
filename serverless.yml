@@ -16,3 +16,4 @@ functions:
     environment:
       TABLE_NAME: Audio-${self:provider.stage}
       STAGE: ${self:provider.stage}
+    provisionedConcurrency: 1
