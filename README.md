@@ -155,7 +155,7 @@ Notice the function declaration in the `serverless.yml` file. First add the appr
 ```yml
 functions:
   cleanAudio:
-    image: 488432361986.dkr.ecr.eu-west-2.amazonaws.com/lambda-clean-audio:latest
+    image: {accountID}.dkr.ecr.eu-west-2.amazonaws.com/lambda-clean-audio:latest
     timeout: 600
     memorySize: 2048
     ephemeralStorageSize: 4096
