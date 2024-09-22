@@ -60,51 +60,41 @@ def lambda_handler(event, context):
 
     if not file_id:
         return {
-            'statusCode': 400,
-            'body': json.dumps({
-                'success': False,
-                'message': 'fileID is required in the request'
-            })
+            'success': False,
+            'message': 'fileID is required in the request',
+            'newFileID': None
         }
 
     file_metadata = fetch_file_from_dynamodb(file_id)
     if not file_metadata:
         return {
-            'statusCode': 404,
-            'body': json.dumps({
-                'success': False,
-                'message': f'File with ID {file_id} not found in DynamoDB'
-            })
+            'success': False,
+            'message': f'File with ID {file_id} not found in DynamoDB',
+            'newFileID': None
         }
 
     user_id = file_metadata.get('userID', {}).get('S')
     if not user_id:
         return {
-            'statusCode': 500,
-            'body': json.dumps({
-                'success': False,
-                'message': 'User ID is missing in file metadata'
-            })
+            'success': False,
+            'message': 'User ID is missing in file metadata',
+            'newFileID': None
         }
 
     file_key = file_metadata.get('key', {}).get('S')
     if not file_key:
         return {
-            'statusCode': 500,
-            'body': json.dumps({
-                'success': False,
-                'message': 'File key is missing in DynamoDB record'
-            })
+            'success': False,
+            'message': 'File key is missing in DynamoDB record',
+            'newFileID': None
         }
 
     file_content = fetch_file_from_s3(file_key, region)
     if not file_content:
         return {
-            'statusCode': 500,
-            'body': json.dumps({
-                'success': False,
-                'message': 'Failed to fetch file from S3'
-            })
+            'success': False,
+            'message': 'Failed to fetch file from S3',
+            'newFileID': None
         }
 
     input_file_path = f"/tmp/{file_key.split('/')[-1]}"
@@ -118,11 +108,9 @@ def lambda_handler(event, context):
     wav_output_path = f"/tmp/enhanced_{input_basename}.wav"
     if not clean_audio(input_file_path, wav_output_path, model, df_state):
         return {
-            'statusCode': 500,
-            'body': json.dumps({
-                'success': False,
-                'message': 'Error enhancing the audio file'
-            })
+            'success': False,
+            'message': 'Error enhancing the audio file',
+            'newFileID': None
         }
 
     # Convert WAV to MP3
@@ -135,11 +123,9 @@ def lambda_handler(event, context):
     except Exception as e:
         logger.error(f"Error converting WAV to MP3: {str(e)}")
         return {
-            'statusCode': 500,
-            'body': json.dumps({
-                'success': False,
-                'message': 'Error converting enhanced audio to MP3'
-            })
+            'success': False,
+            'message': 'Error converting enhanced audio to MP3',
+            'newFileID': None
         }
 
     # Upload MP3 file to S3 with the new path structure
@@ -147,11 +133,9 @@ def lambda_handler(event, context):
     s3_key = f"{user_id}/enhanced/{corrected_filename}"
     if not upload_file_to_s3(mp3_output_path, s3_key, region, corrected_filename):
         return {
-            'statusCode': 500,
-            'body': json.dumps({
-                'success': False,
-                'message': 'Error uploading the cleaned MP3 file to S3'
-            })
+            'success': False,
+            'message': 'Error uploading the cleaned MP3 file to S3',
+            'newFileID': None
         }
 
     file_size = os.path.getsize(mp3_output_path)
@@ -171,10 +155,7 @@ def lambda_handler(event, context):
         # Continue execution even if cleanup fails
 
     return {
-        'statusCode': 200,
-        'body': json.dumps({
-            'success': True,
-            'message': 'File fetched, enhanced, converted to MP3, and new entry created successfully',
-            'newFileID': new_file_entry['id']['S']
-        })
+        'success': True,
+        'message': 'File fetched, enhanced, converted to MP3, and new entry created successfully',
+        'newFileID': new_file_entry['id']['S']
     }
