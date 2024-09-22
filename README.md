@@ -185,6 +185,16 @@ To deploy the Lambda function, you need to have the AWS CLI installed and config
 
 This will deploy the Lambda function to your AWS account.
 
+## Provisioned Concurrency
+
+With container lambdas, cold starts can be a problem. You can pre-warm your Lambda, but it's not the ideal solution. 
+
+Provisioned concurrency is a feature of AWS Lambda that allows you to reserve a specified number of concurrent executions for your function. This can help achieve consistent performance and lower costs by ensuring that your function has the resources it needs to handle requests quickly and efficiently.
+
+[See More in the AWS Guide](https://docs.aws.amazon.com/lambda/latest/operatorguide/execution-environments.html#cold-start-latency)
+
+![Provisioned Concurrency](https://docs.aws.amazon.com/images/lambda/latest/operatorguide/images/perf-optimize-figure-1.png)
+
 
 
 ## Project Structure
