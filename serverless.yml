@@ -1,0 +1,18 @@
+service: clean-audio-service
+
+provider:
+  name: aws
+  runtime: provided.al2
+  stage: dev
+  region: eu-west-2
+  architecture: arm64
+
+functions:
+  cleanAudio:
+    image: 488432361986.dkr.ecr.eu-west-2.amazonaws.com/lambda-clean-audio:latest
+    timeout: 600
+    memorySize: 2048
+    ephemeralStorageSize: 4096
+    environment:
+      TABLE_NAME: Audio-${self:provider.stage}
+      STAGE: ${self:provider.stage}

@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "deepfilter-lambda-container"
+version = "0.1.0"
+description = ""
+authors = ["Oseh Mathias <o@matmail.me>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+deepfilternet = "^0.5.6"
+pydub = "^0.25.1"
+boto3 = "^1.35.24"
+awslambdaric = "^2.2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
