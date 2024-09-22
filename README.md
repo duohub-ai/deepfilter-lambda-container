@@ -193,7 +193,7 @@ Provisioned concurrency is a feature of AWS Lambda that allows you to reserve a 
 
 [See More in the AWS Guide](https://docs.aws.amazon.com/lambda/latest/operatorguide/execution-environments.html#cold-start-latency)
 
-![Provisioned Concurrency](https://docs.aws.amazon.com/images/lambda/latest/operatorguide/images/perf-optimize-figure-1.png)
+![Provisioned Concurrency](https://docs.aws.amazon.com/images/lambda/latest/operatorguide/images/perf-optimize-figure-4.png)
 
 
 
