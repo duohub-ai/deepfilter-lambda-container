@@ -1,4 +1,3 @@
-# pkg/frontend/api/containers/lambda_clean_audio/modules/init.py
 
 import os
 import shutil
