@@ -124,8 +124,8 @@ Notice the function declaration in the `serverless.yml` file. First add the appr
 
 ```yml
 functions:
-  cleanAudio:
-    image: {accountID}.dkr.ecr.{region}.amazonaws.com/lambda-clean-audio:latest
+cleanAudio:
+    image: {accountID}.dkr.ecr.{region}.amazonaws.com/deepfilter-lambda-container:latest
     timeout: 600
     memorySize: 2048
     ephemeralStorageSize: 4096
@@ -145,8 +145,8 @@ To deploy the Lambda function, you need to have the AWS CLI installed and config
 2. **Push the Docker Image to ECR**:
    ```sh
    aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {accountID}.dkr.ecr.{region}.amazonaws.com
-   docker tag testlambda:latest {accountID}.dkr.ecr.{region}.amazonaws.com/testlambda:latest
-   docker push {accountID}.dkr.ecr.{region}.amazonaws.com/testlambda:latest
+   docker tag deepfilter-lambda-container:latest {accountID}.dkr.ecr.{region}.amazonaws.com/deepfilter-lambda-container:latest
+   docker push {accountID}.dkr.ecr.{region}.amazonaws.com/deepfilter-lambda-container:latest
    ```
 
 3. **Deploy the Lambda Function**:

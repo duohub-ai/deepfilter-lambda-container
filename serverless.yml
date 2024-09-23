@@ -9,7 +9,7 @@ provider:
 
 functions:
   cleanAudio:
-    image: {accountID}.dkr.ecr.eu-west-2.amazonaws.com/lambda-clean-audio:latest
+    image: {accountID}.dkr.ecr.eu-west-2.amazonaws.com/deepfilter-lambda-container:latest
     timeout: 600
     memorySize: 2048
     ephemeralStorageSize: 4096
