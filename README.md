@@ -169,11 +169,11 @@ Provisioned concurrency is a feature of AWS Lambda that allows you to reserve a 
 
 ## Use in production
 
-There are two ways to work with the fact that AppSync and API Gateway time out after 30 and 29 seconds respectively.
+There are three ways to work with the fact that AppSync and API Gateway time out after 30 and 29 seconds respectively.
 
 1. Use Step Functions to run the lambda function.
 2. Start the Lambda asynchonously from another Lambda with a 'Job' definition and have the audio clean Lambda update the job definition to a status of 'complete' when it is finished. The frontend polls the job status while a user is active on the page and the job status is not complete, and if the job status is complete when a user loads the page, no ping is needed.
-
+3. Call a Lambda from this Lambda which creates a subscription that the client can read when the job is complete. 
 
 ## Project Structure
 
