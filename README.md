@@ -4,34 +4,16 @@ This project implements a Lambda function using a container image to enhance aud
 
 ## Table of Contents
 
-1. [**DeepFilter Lambda Container**](#deepfilter-lambda-container)
-2. [**Dockerfile**](#dockerfile)
-   1. [Key Components of the Dockerfile](#key-components-of-the-dockerfile)
-      1. [Base Image](#base-image)
-      2. [System Dependencies](#system-dependencies)
-      3. [HDF5 Installation](#hdf5-installation)
-      4. [Rust and Cargo Installation](#rust-and-cargo-installation)
-      5. [FFmpeg Installation](#ffmpeg-installation)
-      6. [PyTorch and torchaudio Installation](#pytorch-and-torchaudio-installation)
-      7. [Python Dependencies](#python-dependencies)
-      8. [Environment Variables](#environment-variables)
-      9. [Code and Model Copying](#code-and-model-copying)
-      10. [CMD Specification](#cmd-specification)
-3. [**Lambda Function**](#lambda-function)
-   1. [Model Initialization](#model-initialization)
-      1. [Copying Model Files](#copying-model-files)
-      2. [Loading the Model](#loading-the-model)
-   2. [Placeholder Functions](#placeholder-functions)
-      1. [Get File Record and File from S3](#get-file-record-and-file-from-s3)
-      2. [Enhance Audio](#enhance-audio)
-      3. [Convert to MP3](#convert-to-mp3)
-      4. [Upload to S3](#upload-to-s3)
-      5. [Create File Record](#create-file-record)
-4. [**Deploying the Lambda Function**](#deploying-the-lambda-function)
-   1. [Build the Docker Image](#build-the-docker-image)
-   2. [Push the Docker Image to ECR](#push-the-docker-image-to-ecr)
-   3. [Deploy the Lambda Function](#deploy-the-lambda-function)
-
+- [DeepFilter Lambda Container](#deepfilter-lambda-container)
+  - [Table of Contents](#table-of-contents)
+  - [Dockerfile](#dockerfile)
+    - [Key Components of the Dockerfile](#key-components-of-the-dockerfile)
+  - [Lambda Function](#lambda-function)
+    - [Model Initialization](#model-initialization)
+  - [Deploying the Lambda Function](#deploying-the-lambda-function)
+    - [Provisioned Concurrency](#provisioned-concurrency)
+  - [Use in production](#use-in-production)
+  - [Project Structure](#project-structure)
 
 ## Dockerfile
 
@@ -136,7 +118,7 @@ Lambda environments are read-only, so we need to copy the model files to a writa
            model, df_state, _ = init_df(model_base_dir=TMP_MODEL_DIR)
    ```
 
-# Deploying the Lambda Function
+## Deploying the Lambda Function
 
 Notice the function declaration in the `serverless.yml` file. First add the appropriate definitions to your serverless stack.
 
@@ -174,7 +156,7 @@ To deploy the Lambda function, you need to have the AWS CLI installed and config
 
 This will deploy the Lambda function to your AWS account.
 
-## Provisioned Concurrency
+### Provisioned Concurrency
 
 With container lambdas, cold starts can be a problem. You can pre-warm the Lambda with pings, but it does not solve the problem.
 
@@ -185,7 +167,7 @@ Provisioned concurrency is a feature of AWS Lambda that allows you to reserve a 
 ![Provisioned Concurrency](https://docs.aws.amazon.com/images/lambda/latest/operatorguide/images/perf-optimize-figure-4.png)
 
 
-# Use in production
+## Use in production
 
 There are two ways to work with the fact that AppSync and API Gateway time out after 30 and 29 seconds respectively.
 
