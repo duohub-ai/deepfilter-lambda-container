@@ -207,9 +207,7 @@ The file tree is as follows:
 │   └── config.ini
 ├── modules
 │   ├── __init__.py
-│   ├── file.py
-│   ├── init.py
-│   └── s3.py
+│   └── init.py
 ├── poetry.lock
 ├── push.sh
 └── pyproject.toml
