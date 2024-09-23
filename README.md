@@ -82,7 +82,7 @@ Our Dockerfile is structured to create an efficient and functional container for
 
 7. **Python Dependencies**: 
    ```sh
-   RUN pip install icecream loguru numpy ptflops requests packaging sympy colorama pydub boto3 deepfilternet
+   RUN pip install numpy pydub boto3 deepfilternet
    ```
    Install various Python packages required for our application, including the DeepFilterNet library.
 
@@ -135,18 +135,6 @@ Lambda environments are read-only, so we need to copy the model files to a writa
            copy_model_files()
            model, df_state, _ = init_df(model_base_dir=TMP_MODEL_DIR)
    ```
-### Placeholder functions
-
-Placeholder  functions exist where you might add your own fetching and processing logic. 
-
-3. **Get File record and File from S3**: The function fetches the file record and file from S3.
-4. **Enhance Audio**: The function enhances the audio file using the DeepFilter model.
-5. **Convert to MP3**: The function converts the enhanced audio file to MP3 format.
-6. **Upload to S3**: The function uploads the cleaned MP3 file to S3.
-7. **Create File Record**: The function creates a file record in the database.
-
-By using this approach, we create an efficient and reliable system for running the DeepFilter model in a serverless environment.
-
 
 # Deploying the Lambda Function
 
@@ -155,13 +143,14 @@ Notice the function declaration in the `serverless.yml` file. First add the appr
 ```yml
 functions:
   cleanAudio:
-    image: {accountID}.dkr.ecr.eu-west-2.amazonaws.com/lambda-clean-audio:latest
+    image: {accountID}.dkr.ecr.{region}.amazonaws.com/lambda-clean-audio:latest
     timeout: 600
     memorySize: 2048
     ephemeralStorageSize: 4096
     environment:
       TABLE_NAME: Audio-${self:provider.stage}
       STAGE: ${self:provider.stage}
+   provisionedConcurrency: 1
 ```
 
 To deploy the Lambda function, you need to have the AWS CLI installed and configured with the appropriate permissions.
@@ -173,9 +162,9 @@ To deploy the Lambda function, you need to have the AWS CLI installed and config
 
 2. **Push the Docker Image to ECR**:
    ```sh
-   aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin {accountID}.dkr.ecr.{region}.amazonaws.com
-   docker tag deepfilter-lambda-container:latest {accountID}.dkr.ecr.{region}.amazonaws.com/lambda-clean-audio:latest
-   docker push {accountID}.dkr.ecr.{region}.amazonaws.com/lambda-clean-audio:latest
+   aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {accountID}.dkr.ecr.{region}.amazonaws.com
+   docker tag testlambda:latest {accountID}.dkr.ecr.{region}.amazonaws.com/testlambda:latest
+   docker push {accountID}.dkr.ecr.{region}.amazonaws.com/testlambda:latest
    ```
 
 3. **Deploy the Lambda Function**:
@@ -195,6 +184,13 @@ Provisioned concurrency is a feature of AWS Lambda that allows you to reserve a 
 
 ![Provisioned Concurrency](https://docs.aws.amazon.com/images/lambda/latest/operatorguide/images/perf-optimize-figure-4.png)
 
+
+# Use in production
+
+There are two ways to work with the fact that AppSync and API Gateway time out after 30 and 29 seconds respectively.
+
+1. Use Step Functions to run the lambda function.
+2. Start the Lambda asynchonously from another Lambda with a 'Job' definition and have the audio clean Lambda update the job definition to a status of 'complete' when it is finished. The frontend polls the job status while a user is active on the page and the job status is not complete, and if the job status is complete when a user loads the page, no ping is needed.
 
 
 ## Project Structure

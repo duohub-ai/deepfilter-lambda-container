@@ -54,7 +54,7 @@ RUN wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.t
 RUN pip install torch==2.0.0 torchaudio==2.0.1 -f https://download.pytorch.org/whl/cpu/torch_stable.html
 
 # Install Python dependencies that don't require compilation
-RUN pip install icecream loguru numpy ptflops requests packaging sympy colorama pydub boto3 deepfilternet
+RUN pip install numpy pydub boto3 deepfilternet
 
 # Set additional environment variables for the build process
 ENV RUSTFLAGS="-L ${HDF5_LIBDIR}" \
