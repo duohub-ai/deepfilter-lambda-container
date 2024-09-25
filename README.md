@@ -169,11 +169,12 @@ Provisioned concurrency is a feature of AWS Lambda that allows you to reserve a 
 
 ## Use in production
 
-There are three ways to work with the fact that AppSync and API Gateway time out after 30 and 29 seconds respectively.
+There are many ways to work with the fact that AppSync and API Gateway time out after 30 and 29 seconds respectively, as well as Lambda rate limits. Some methods are listed below.
 
 1. Use Step Functions to run the lambda function.
-2. Start the Lambda asynchonously from another Lambda with a 'Job' definition and have the audio clean Lambda update the job definition to a status of 'complete' when it is finished. The frontend polls the job status while a user is active on the page and the job status is not complete, and if the job status is complete when a user loads the page, no ping is needed.
-3. Call a Lambda from this Lambda which creates a subscription that the client can read when the job is complete. 
+2. Start the Lambda asynchonously from another Lambda with a 'Job' definition and have the audio clean Lambda update the job definition to a status of 'complete' when it is finished. The frontend polls the job status while a user is active on the page and the job status is not complete, and if the job status is complete when a user loads the page, no ping is needed. Only works for a few samples due rate limits.
+3. Call a Lambda from this Lambda which creates a subscription that the client can read when the job is complete.
+4. To start cleaning samples, call a Lambda which populates an SQS queue with your samples - one message per sample, batched by 10. Create a Processing table to store the batchID and progress. Have this Lambda update the processing table with an [incremental update](https://aws.amazon.com/blogs/database/implement-auto-increment-with-amazon-dynamodb/). Poll the Processing table for completed / total.
 
 ## Project Structure
 
