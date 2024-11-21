@@ -1,22 +1,22 @@
-# Use AWS Lambda Python 3.10 base image
-FROM public.ecr.aws/lambda/python:3.10
+# Use Python 3.10 base image
+FROM python:3.10-slim
 
 # Install system dependencies
-RUN yum update -y && \
-    yum install -y \
+RUN apt-get update && \
+    apt-get install -y \
     git \
     wget \
     tar \
-    xz \
+    xz-utils \
     gcc \
-    gcc-c++ \
+    g++ \
     make \
-    openssl-devel \
-    bzip2-devel \
-    libffi-devel \
-    zlib-devel \
+    libssl-dev \
+    libbz2-dev \
+    libffi-dev \
+    zlib1g-dev \
     pkg-config \
-    && yum clean all
+    && apt-get clean
 
 # Install HDF5 from source
 ENV HDF5_VERSION=1.12.2
@@ -41,11 +41,11 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Install FFmpeg
-RUN wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz && \
-    tar xvf ffmpeg-release-arm64-static.tar.xz && \
-    mv ffmpeg-*-arm64-static/ffmpeg /usr/local/bin/ && \
-    mv ffmpeg-*-arm64-static/ffprobe /usr/local/bin/ && \
-    rm -rf ffmpeg-*-arm64-static*
+RUN wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz && \
+    tar xvf ffmpeg-release-amd64-static.tar.xz && \
+    mv ffmpeg-*-amd64-static/ffmpeg /usr/local/bin/ && \
+    mv ffmpeg-*-amd64-static/ffprobe /usr/local/bin/ && \
+    rm -rf ffmpeg-*-amd64-static*
 
 # Clone DeepFilterNet repository to a persistent location
 # RUN git clone https://github.com/Rikorose/DeepFilterNet.git /opt/DeepFilterNet
@@ -69,14 +69,14 @@ RUN echo "HDF5_DIR: $HDF5_DIR" && \
     ls -l $HDF5_LIBDIR && \
     ls -l $HDF5_INCLUDEDIR
 
-# Set back to Lambda task root
-WORKDIR ${LAMBDA_TASK_ROOT}
+# Set working directory
+WORKDIR /app
 
 # Copy function code
-COPY main.py ${LAMBDA_TASK_ROOT}/
-COPY modules/ ${LAMBDA_TASK_ROOT}/modules/
+COPY main.py /app/
+COPY modules/ /app/modules/
 
 COPY models/ /opt/deepfilter_models/
 
 # Set the CMD to your handler
-CMD [ "main.lambda_handler" ]
+CMD [ "python", "main.py" ]
