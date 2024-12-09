@@ -15,6 +15,8 @@ RUN pip install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_s
 
 # Install DeepFilterNet
 RUN pip install deepfilternet
+RUN pip install Flask
+
 
 # Uncomment the following line to include data loading functionality for training (Linux only)
 # RUN pip install 'deepfilternet[train]'
